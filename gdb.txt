@@ -1,0 +1,5 @@
+tui enable
+layout asm
+layout reg
+file boot
+target remote localhost:1234
