@@ -1,28 +1,34 @@
-ARCH=riscv64
-TARGET=$(ARCH)-unknown-elf
+CC = zig cc -target riscv64-freestanding
+CFLAGS = -Wall -Wextra
 
-AS = $(TARGET)-as
-LD = $(TARGET)-ld
-CC = $(TARGET)-gcc
-CFLAGS = -march=rv64g -mabi=lp64 -static -mcmodel=medany $\
-		-fvisibility=hidden -nostdlib -nostartfiles -Isifive_u
-
-QEMU = qemu-system-$(ARCH)
-QFLAGS = -display none -serial stdio -machine sifive_u -bios none
+QEMU = qemu-system-riscv64 -machine virt
+QFLAGS = -display none -serial stdio -bios none
 
 ifeq ($(DEBUG),1)
-CFLAGS += -g
-QFLAGS += -s -S
+	CFLAGS += -g
+	QFLAGS += -s -S
 endif
 
-run: boot
+C_SRCS=$(wildcard *.c)
+C_OBJS=$(C_SRCS:.c=.c.o)
+
+S_SRCS=$(wildcard *.S)
+S_OBJS=$(S_SRCS:.S=.s.o)
+
+run: kernel.elf
 	$(QEMU) $(QFLAGS) -kernel $<
 
-debug: gdb.txt
-	$(TARGET)-gdb -x gdb.txt
+kernel.elf: linker.ld $(addprefix .cache/,$(S_OBJS)) $(addprefix .cache/,$(C_OBJS))
+	$(CC) -nostdlib -o $@ -T $^
 
-boot: linker.ld boot.S
-	$(CC) $(CFLAGS) -o $@ -T $^
+.cache/%.c.o: %.c | .cache
+	$(CC) $(CFLAGS) -c -mcmodel=medany -ffreestanding -o $@ $^
+
+.cache/%.s.o: %.S | .cache
+	$(CC) -c -o $@ $^
 
 clean:
-	rm -f boot *.o
+	rm -rf .cache kernel.elf
+
+.cache:
+	mkdir -p .cache
