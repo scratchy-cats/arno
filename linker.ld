@@ -55,6 +55,7 @@ SECTIONS {
    * definining it in the code, this should not end up in the actual elf binary
    * but only describe the stack. */
   .bss : ALIGN(4K) {
+    PROVIDE(bss0 = .);
     *(.bss);
     . = ALIGN(4K);
     PROVIDE(stack0 = .);

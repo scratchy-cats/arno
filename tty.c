@@ -13,3 +13,13 @@ void print(const char *str) {
   }
   return;
 }
+
+void println(const char *str) {
+  while (*str != '\0') {
+    putchar(*str);
+    str++;
+  }
+  putchar('\n');
+  putchar('\r');
+  return;
+}

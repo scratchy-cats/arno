@@ -1,5 +1,5 @@
 tui enable
 layout asm
 layout reg
-file boot
+file kernel.elf
 target remote localhost:1234

@@ -1,3 +1,2 @@
-/boot
-*.o
-nohup.out
+.cache/
+*.elf
