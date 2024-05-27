@@ -1,8 +1,10 @@
+NUM_HART=1
+
 CC = zig cc -target riscv64-freestanding
 CFLAGS = -Wall -Wextra
 
 QEMU = qemu-system-riscv64 -machine virt
-QFLAGS = -display none -serial stdio -bios none
+QFLAGS = -display none -serial stdio -bios none -smp $(NUM_HART)
 
 ifeq ($(DEBUG),1)
 	CFLAGS += -g

@@ -8,7 +8,7 @@ ENTRY(_start);
 /* there are no real variables in a linker script. This defines actually a
  * global symbol that can been seen everwhere. Hence I used double underscore
  * since this cant be used by the user, when writing c, afaik. */
-__NUM_HART = 8;
+__NUM_HART = 1;
 
 /* see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c#L70 some
  * regions are commeted as they use macros. Also not that it sets rwx for all,
@@ -44,21 +44,29 @@ MEMORY
  * doing objdump, some of them do show up, notably sdata, next to the standard
  * text and data. */
 SECTIONS {
-  .init     : ALIGN(4K) { *(.init    .init*   ); } > VIRT_DRAM
   .text     : ALIGN(4K) { *(.text    .text*   ); } > VIRT_DRAM
   .srodata  : ALIGN(4K) { *(.srodata .srodata*); } > VIRT_DRAM
   .rodata   : ALIGN(4K) { *(.rodata  .rodata* ); } > VIRT_DRAM
   .sdata    : ALIGN(4K) { *(.sdata   .sdata*  ); } > VIRT_DRAM
   .data     : ALIGN(4K) { *(.data    .data*   ); } > VIRT_DRAM
 
-  /* bss is interesting, it provides the symbol for stack0. In contrast to
-   * definining it in the code, this should not end up in the actual elf binary
-   * but only describe the stack. */
   .bss : ALIGN(4K) {
-    PROVIDE(bss0 = .);
+    /* unitialized data */
+    PROVIDE(bss_start = .);
     *(.bss);
     . = ALIGN(4K);
+
+    /* the stack lives here, 4k per hart */
     PROVIDE(stack0 = .);
-    . += 4096 * __NUM_HART;
+    . += 4K * __NUM_HART;
+
+    /* the global pointer marks the start of the place to look for global
+     * variables. adding 4K to it, is not required but I am doing it anyway so
+     * that we get a portion of zero initialized data for the global variables
+     */
+    PROVIDE(gptr = .);
+    . += 4K;
+
+    PROVIDE(bss_end = .);
   } > VIRT_DRAM
 }

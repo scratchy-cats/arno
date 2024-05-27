@@ -1,5 +1,0 @@
-tui enable
-layout asm
-layout reg
-file kernel.elf
-target remote localhost:1234
