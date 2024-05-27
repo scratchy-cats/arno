@@ -1,2 +1,2 @@
-.cache/
-*.elf
+zig-cache/
+zig-out/
