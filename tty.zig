@@ -1,21 +1,13 @@
-const std = @import("std");
-
+// qemu's virt machine type places uart at this adress.
 const uart: *volatile u8 = @ptrFromInt(0x10000000);
 
-pub fn putchar(c: u8) void {
-    uart.* = c;
-}
-
-pub fn print(str: [*]const u8) void {
-    var i: usize = 0;
-    while (str[i] != 0) {
-        putchar(str[i]);
-        i += 1;
+pub fn print(str: []const u8) void {
+    for (str) |c| {
+        uart.* = c;
     }
 }
 
-pub fn println(str: [*]const u8) void {
+pub fn println(str: []const u8) void {
     print(str);
-    putchar('\n');
-    putchar('\r');
+    print("\n\r");
 }
