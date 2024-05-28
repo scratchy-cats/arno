@@ -51,9 +51,9 @@ bss_clear:
 	bltu t5, t6, bss_clear
 
 	// jump to the kernel
-	la   t0, kmain
+	la   t0, main
 	csrw mepc, t0
-	tail kmain
+	tail main
 
 	// if main returns, which it should not, just spin
 spin:

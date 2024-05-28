@@ -12,14 +12,12 @@ pub fn build(b: *std.Build) !void {
         }),
     });
 
-    k.addIncludePath(b.path("."));
+    k.root_module.code_model = .medium;
+    k.root_module.root_source_file = b.path("main.zig");
     k.setLinkerScript(b.path("linker.ld"));
     k.addAssemblyFile(b.path("entry.S"));
-
-    k.addCSourceFiles(.{
-        .flags = &.{ "-mcmodel=medany", "-ffreestanding" },
-        .files = &.{ "crt0.c", "tty.c", "kernel.c" },
-    });
+    k.addIncludePath(b.path("."));
+    k.addCSourceFiles(.{ .flags = &.{"-mcmodel=medany"}, .files = &.{"crt0.c"} });
 
     b.installArtifact(k);
 

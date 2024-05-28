@@ -35,7 +35,7 @@ MEMORY
     /*VIRT_IMSIC_S (rwx) : ORIGIN = 0x28000000, LENGTH = VIRT_IMSIC_MAX_SIZE*/
     VIRT_PCIE_ECAM (rwx) : ORIGIN = 0x30000000, LENGTH = 0x10000000
     VIRT_PCIE_MMIO (rwx) : ORIGIN = 0x40000000, LENGTH = 0x40000000
-    VIRT_DRAM (rwx) : ORIGIN = 0x80000000, LENGTH = 256M
+    VIRT_DRAM (rwx) : ORIGIN = 0x80000000, LENGTH = 0x6400000
 }
 
 /* the name of the sections has been taken from various sources including:
