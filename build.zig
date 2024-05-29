@@ -16,8 +16,6 @@ pub fn build(b: *std.Build) !void {
     k.root_module.root_source_file = b.path("main.zig");
     k.setLinkerScript(b.path("linker.ld"));
     k.addAssemblyFile(b.path("entry.S"));
-    k.addIncludePath(b.path("."));
-    k.addCSourceFiles(.{ .flags = &.{"-mcmodel=medany"}, .files = &.{"crt0.c"} });
 
     b.installArtifact(k);
 
