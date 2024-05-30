@@ -15,11 +15,9 @@ pub fn build(b: *std.Build) !void {
     k.root_module.code_model = .medium;
     k.root_module.root_source_file = b.path("main.zig");
     k.setLinkerScript(b.path("linker.ld"));
-    k.addAssemblyFile(b.path("entry.S"));
-
     b.installArtifact(k);
 
-    const r = b.addSystemCommand(&.{
+    const qemu = b.addSystemCommand(&.{
         "qemu-system-riscv64",
         "-machine",
         "virt",
@@ -33,12 +31,12 @@ pub fn build(b: *std.Build) !void {
         "zig-out/bin/kernel.elf",
     });
 
-    r.step.dependOn(b.getInstallStep());
+    qemu.step.dependOn(b.getInstallStep());
 
     if (b.args) |args| {
-        r.addArgs(args);
+        qemu.addArgs(args);
     }
 
-    const run_step = b.step("run", "Run the kernel with qemu virt machine");
-    run_step.dependOn(&r.step);
+    const qemu_run = b.step("run", "Run the kernel with qemu virt machine");
+    qemu_run.dependOn(&qemu.step);
 }
