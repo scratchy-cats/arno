@@ -1,8 +1,13 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
+    // docs
+    const docs = b.step("docs", "Generate documentation");
+    const docs_build = b.addSystemCommand(&.{ "asciidoctor-pdf", "README.adoc" });
+    docs.dependOn(&docs_build.step);
+
+    // default (install)
     const k = b.addExecutable(.{
-        .name = "kernel.elf",
         .optimize = b.standardOptimizeOption(.{}),
         .target = b.resolveTargetQuery(.{
             .cpu_arch = .riscv64,
@@ -10,13 +15,15 @@ pub fn build(b: *std.Build) !void {
             .abi = .none,
             .ofmt = .elf,
         }),
+        .name = "kernel.elf",
+        .code_model = .medium,
+        .root_source_file = b.path("main.zig"),
     });
 
-    k.root_module.code_model = .medium;
-    k.root_module.root_source_file = b.path("main.zig");
     k.setLinkerScript(b.path("linker.ld"));
     b.installArtifact(k);
 
+    // run
     const qemu = b.addSystemCommand(&.{
         "qemu-system-riscv64",
         "-machine",
@@ -37,6 +44,6 @@ pub fn build(b: *std.Build) !void {
         qemu.addArgs(args);
     }
 
-    const qemu_run = b.step("run", "Run the kernel with qemu virt machine");
-    qemu_run.dependOn(&qemu.step);
+    const run = b.step("run", "Run the kernel with qemu virt machine");
+    run.dependOn(&qemu.step);
 }

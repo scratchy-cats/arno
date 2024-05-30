@@ -1,11 +1,12 @@
 = RISC-V Kernel
 
-:url-riscv-spec: https://riscv.org/technical/specifications/
-:url-extra-src: https://inst.eecs.berkeley.edu/~cs61c/su21/resources/
+:url-spec: https://riscv.org/technical/specifications/
+:url-cs61c: https://inst.eecs.berkeley.edu/~cs61c/su21/resources/
+:url-asm: https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md
 
 == Getting Started
 
-Get the {url-riscv-spec}[RISC-V specification].
+Get the {url-spec}[RISC-V specification].
 
 Build the kernel and run it with qemu. Output goes to the console.
 
@@ -14,7 +15,9 @@ Build the kernel and run it with qemu. Output goes to the console.
 zig build run
 ----
 
-You can find more useful resources at {url-extra-src}[berkeley.edu cs61].
+You can find more useful resources at {url-cs61c}[berkeley.edu cs61c].
+
+There are also non isa resources, for example the {url-asm}[riscv-asm-manual].
 
 == Debugging
 
