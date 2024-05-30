@@ -2,23 +2,17 @@ const tty = @import("tty.zig");
 const cpu = @import("cpu.zig");
 const str = @import("str.zig");
 
-comptime {
-    asm (".option norvc");
-}
-
-export fn _start() callconv(.Naked) noreturn {
-    cpu.load_gp();
-    cpu.load_sp();
-    asm volatile ("tail machine");
-}
-
 export fn machine() noreturn {
-    cpu.csrw("satp", 0);
+    tty.println("machine mode, setup");
+
     cpu.csrw("mepc", @intFromPtr(&supervisor));
+    tty.log("mepc", str.btoax(cpu.csrr("mepc")));
+
     asm volatile ("mret");
     unreachable;
 }
 
 export fn supervisor() noreturn {
+    tty.println("supervisor mode, setup");
     cpu.hang();
 }

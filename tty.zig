@@ -11,3 +11,9 @@ pub fn println(str: []const u8) void {
     print(str);
     print("\n\r");
 }
+
+pub fn log(prefix: []const u8, msg: []const u8) void {
+    print(prefix);
+    print(": ");
+    println(msg);
+}
