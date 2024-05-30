@@ -1,3 +1,4 @@
+[colophon]
 == Resources
 ****
 .Specifications
@@ -18,11 +19,11 @@
 .Blog
 * https://twilco.github.io/[Twilco GitHub Page]
 * https://www.meyerzinn.tech/posts/2023/03/05/running-rust-code-on-risc-v-in-qemu/[Running Rust Code on RISC-V in QEMU]
+* https://www.petrside.gr/posts/riscv-qemu/[RISC-V QEMU]
+* https://osblog.stephenmarz.com/ch1.html[Stephen Marz OS Blog]
 
 .Compiler
 * https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_chapter/ld_3.html[GNU Linker Manual]
 * https://allthingsembedded.com/post/2020-04-11-mastering-the-gnu-linker-script/[Mastering the GNU Linker Script]
 * https://0x04.net/doc/elf/tls.pdf[Understanding ELF TLS]
 ****
-
-

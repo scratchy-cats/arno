@@ -3,7 +3,7 @@ const std = @import("std");
 pub fn build(b: *std.Build) !void {
     // docs
     const docs = b.step("docs", "Generate documentation");
-    const docs_build = b.addSystemCommand(&.{ "asciidoctor-pdf", "README.adoc" });
+    const docs_build = b.addSystemCommand(&.{ "asciidoctor-pdf", "-a", "allow-uri-read=true", "docs/riscv-kernel.adoc" });
     docs.dependOn(&docs_build.step);
 
     // default (install)
