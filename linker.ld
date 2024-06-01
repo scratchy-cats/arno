@@ -1,57 +1,44 @@
-/* we want risv64 with little endian alignment */
+/* The C compilation model and Linker Scripts explained :
+ * https://github.com/scratchy-cats/operating-system/wiki/C-Compilation-Model-and-Linker-Scripts */
+
+/* The output object file (in ELF64 binary format) is meant for 64 bit RISCV CPU architecture and
+ * Little Endian byte ordering.
+ *
+ * ELF file format explained : https://linux-audit.com/elf-binaries-on-linux-understanding-and-analysis.
+ * Little vs Big Endian explained : https://youtu.be/T1C9Kj_78ek. */
 OUTPUT_FORMAT(elf64-littleriscv);
-OUTPUT_ARCH(riscv:rv64);
+OUTPUT_ARCH(riscv:rv64)
 
-/* the entry with the the standard _start symbol. This is defined in entry.S */
-ENTRY(_start);
+/* Entrypoint symbol '_entry' is defined in ./src/asm/entry.S */
+ENTRY(_entry)
 
-/* there are no real variables in a linker script. This defines actually a
- * global symbol that can been seen everwhere. Hence I used double underscore
- * since this cant be used by the user, when writing c, afaik. */
-__NUM_HART = 2;
-
-/* # tag::memory[] */
-/* see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c#L70 */
-MEMORY
-{
-    VIRT_DRAM (rwx) : ORIGIN = 0x80000000, LENGTH = 0x6400000
-}
-/* # end::memory[] */
-
-/* sections maps the different parts of the program like instructions and
- * variables to different locations. We are placing everything in DRAM.
- * # tag::sections[] */
+/* Defining how to map input sections to output sections and how those output sections will be placed
+ * in-memory. */
 SECTIONS {
-  . = ORIGIN(VIRT_DRAM);
+  /* QEMU expects the ELF file's text section to start from 0x80000000 in memory.
+   * Reference : https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c#L70 */
+  . = 0x80000000;
 
-  .text : ALIGN(4K) {
-    *(.text .text*);
-  } > VIRT_DRAM
+  .text : {
+    *(.text)
+  }
 
+  /* Meaning of ALIGN(4K) : Let's say the .text section ends at 10 KB. We want the .rodata section
+   * to start from the next 4KB boundary (i.e. from 12 KB mark).
+   *
+   * TODO : Explain why it's required. */
   .rodata : ALIGN(4K) {
-    *(.srodata .srodata*);
-    *(.rodata .rodata*);
-  } > VIRT_DRAM
+    *(.rodata .rodata.*)
+  }
 
   .data : ALIGN(4K) {
-    *(.sdata .sdata*);
-    *(.data .data*);
-  } > VIRT_DRAM
+    *(.data .data.*)
+  }
 
-  /* bss is a bit more interesting than the other sections. It "provides"
-   * serveral symbol holding a memory adress as value. These symbols, are used
-   * by other parts of the system, to load certain registers. for example sp
-   * the stack pointer, and gp the global pointer. */
   .bss : ALIGN(4K) {
-    PROVIDE(bss_start = .);
-    *(.bss);
-    . = ALIGN(4K);
-    /* the stack gets 4k per hardware thread */
-    PROVIDE(stack0 = .);
-    . += 4K * __NUM_HART;
-    /* the global pointer helds to locate global variables */
-    PROVIDE(gptr = .);
-    PROVIDE(bss_end = .);
-  } > VIRT_DRAM
+    *(.bss .bss.*)
+    *(.sbss* .sbss.*)
+  }
+
+  PROVIDE(end = .);
 }
-/* end::sections[] */

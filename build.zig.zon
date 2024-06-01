@@ -1,6 +1,0 @@
-.{
-    .name = "operating-system",
-    .version = "0.0.0",
-    .dependencies = .{},
-    .paths = .{""},
-}
