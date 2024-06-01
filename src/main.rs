@@ -22,6 +22,7 @@ core::arch::global_asm!(include_str!("asm/entry.S"));
              // with the name 'start'. Without the attribute, the compiler would generate some
              // cryptic symbol to give every function a unique name.
 pub fn start() -> ! {
+  println!("Kernal starting....");
   loop {}
 }
 
@@ -34,3 +35,5 @@ use core::panic::PanicInfo;
 fn panic(_info: &PanicInfo<'_>) -> ! {
   loop {}
 }
+
+mod console;
