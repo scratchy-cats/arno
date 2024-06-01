@@ -2,12 +2,9 @@
 target = "riscv64gc-unknown-none-elf"
 
 [target.riscv64gc-unknown-none-elf]
-rustflags = ["-C", "link-arg=-Tlinker.ld"]
+rustflags = [ "-C", "code-model=medium"]
 runner = """
-  qemu-system-riscv64 \
-    -machine virt \
-    -bios none \
-    -smp 1 \
-    -nographic \
-    -kernel
+  qemu-system-riscv64 -machine virt
+    -display none -serial stdio -smp 2
+    -bios none -kernel
 """

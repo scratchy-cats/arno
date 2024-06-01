@@ -1,0 +1,19 @@
+= RISC-V Kernel
+
+.Build the kernel
+[source,bash]
+cargo build
+
+.Run with QEMU
+[source,bash]
+cargo run
+
+.Debug with GDB
+[source,bash]
+nohup cargo run -- -s -S &
+riscv64-unknown-elf-gdb -x .gdbinit
+
+.Stop QEMU
+[source,bash]
+fg
+ctrl-c
