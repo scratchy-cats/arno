@@ -1,0 +1,12 @@
+= Code model
+
+[quote]
+The medium any code model, or medany, allows the code to address the range
+between -2 GiB and +2 GiB from its position. By using auipc and load / store
+instructions, when referring to an object, or addi, when calculating an address
+literal, for example, a signed 32-bit offset, relative to the value of the pc
+register, can be produced.
+
+****
+* https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-elf.adoc#medium-any-code-model
+****

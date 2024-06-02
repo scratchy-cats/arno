@@ -1,0 +1,25 @@
+= Disabling the C extension
+
+[source,as]
+.option arch, -c
+
+****
+* https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md#arch
+* https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md#rvcnorvc
+****
+
+According to the https://github.com/riscvarchive/riscv-gcc/issues/135[web],
+this should not be enabled when using `rv64g` but we are currently using
+`rv64gc`, due to https://github.com/rust-lang/rust/issues/80608[[rust release
+build issues]. This should be further investigated.
+
+[quote]
+`UNIMP` : C0001073. This is an alias for CSRRW x0, cycle, x0. Since cycle is a
+read-only CSR, then (whether this CSR exists or not) an attempt to write into
+it will generate an illegal instruction exception. This 32-bit form of UNIMP is
+emitted when targeting a system without the C extension, or when the .option
+norvc directive is used.
+
+* https://github.com/llvm/llvm-project/commit/bca0c3cdb6d49822dbfbcac0bd2719e17e08f309
+* https://forums.sifive.com/t/how-to-disable-c-extension-in-risc-v-compiler/2713/2
+* https://github.com/riscv-non-isa/riscv-asm-manual/issues/84

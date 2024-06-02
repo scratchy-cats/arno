@@ -2,6 +2,7 @@
 target = "riscv64gc-unknown-none-elf"
 
 [target.riscv64gc-unknown-none-elf]
+# https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-elf.adoc#medium-any-code-model
 rustflags = [ "-C", "code-model=medium"]
 runner = """
   qemu-system-riscv64 -machine virt

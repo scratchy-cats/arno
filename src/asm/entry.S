@@ -1,5 +1,7 @@
+// fix release mode: https://github.com/rust-lang/rust/issues/80608
 .attribute arch, "rv64gc"
-.option    arch, -c       // disable c-extension
+
+.option arch, -c // disable c-extension ?!
 
 .equ STACK_SIZE, 4096
 .equ MPP_M, 3 << 11
@@ -9,7 +11,9 @@
 .global  _start
 
 _start:
-	// setup the global pointer
+	// disable linker relaxation,
+	// and setup the global pointer.
+	// also known as "gp relaxation"
 	.option push
 	.option norelax
 	la      gp, __global_pointer$
@@ -20,6 +24,7 @@ _start:
 	mv   tp, a3
 
 	// setup the stack pointer
+	// based on the number of harts
 	addi a0, a3, 1
 	li   a1, STACK_SIZE
 	mul  a0, a0, a1
