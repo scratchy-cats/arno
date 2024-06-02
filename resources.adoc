@@ -1,0 +1,33 @@
+= Resources
+
+.Specifications
+* https://riscv.org/technical/specifications/[RISC-V Specifications]
+* https://github.com/riscv-non-isa[Non-ISA RISC-V Specifications]
+* https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md[RISC-V Assembly Programmer's Manual]
+* https://inst.eecs.berkeley.edu/~cs61c/su21/resources/[CS61C Resources]
+* https://github.com/riscv/riscv-isa-manual/blob/main/src/[RISC-V ISA Manual]
+* https://clownote.github.io/2021/03/06/xv6/Xv6-page-table/[Xv6 Page Table Explanation]
+* https://riscv.org/wp-content/uploads/2015/01/riscv-calling.html[RISC-V Calling Convention]
+* https://riscv.org/blog/2024/03/adding-physical-memory-protection-to-the-veer-el2-risc-v-core-2/[Physical Memory Protection]
+* https://naizhengtan.github.io/23fall/docs/lab4/pmp.pdf[RISC-V Physical Memory Protection]
+
+.QEMU
+* https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c#L70[QEMU RISC-V Virt.c Source Code]
+
+.AsciiDoc
+* https://docs.asciidoctor.org/asciidoc/latest/[AsciiDoctor Documentation]
+* https://github.com/riscv/docs-dev-guide[RISC-V Documentation Development Guide]
+
+.Blog
+* https://twilco.github.io/[Twilco GitHub Page]
+* https://www.meyerzinn.tech/posts/2023/03/05/running-rust-code-on-risc-v-in-qemu/[Running Rust Code on RISC-V in QEMU]
+* https://www.petrside.gr/posts/riscv-qemu/[RISC-V QEMU]
+* https://osblog.stephenmarz.com/ch1.html[Stephen Marz OS Blog]
+
+.Compiler
+* https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_chapter/ld_3.html[GNU Linker Manual]
+* https://allthingsembedded.com/post/2020-04-11-mastering-the-gnu-linker-script/[Mastering the GNU Linker Script]
+* https://0x04.net/doc/elf/tls.pdf[Understanding ELF TLS]
+
+.Rust
+* https://github.com/rust-embedded/wg/issues/551[Rust panics in embedded systems]
