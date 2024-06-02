@@ -21,8 +21,8 @@ core::arch::global_asm!(include_str!("asm/entry.S"));
 #[no_mangle] // Disable name-mangling to ensure that the Rust compiler really outputs a function
              // with the name 'start'. Without the attribute, the compiler would generate some
              // cryptic symbol to give every function a unique name.
-pub fn start() -> ! {
-  println!("Kernal starting....");
+pub fn main() -> ! {
+  println!("Supervisor mode....");
   loop {}
 }
 
