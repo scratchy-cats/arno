@@ -1,0 +1,19 @@
+= Architecture Attribute
+
+[source,as]
+.attribute arch, "rv64gc"
+
+****
+* https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md#-attribute
+* https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-elf.adoc#tag_riscv_arch-5-ntbssubarch
+****
+
+The arch attribute specifies the target architecture for the function. The
+value is a string that specifies the target architecture. It has influence on
+the extensions that are enabled by default as well as the ABI.
+
+When building rust code in release mode, and using global_asm to include
+assembly, the  https://github.com/rust-lang/rust/issues/80608[compiler does not
+honor rusts target], so setting this attribute seems required.
+
+
