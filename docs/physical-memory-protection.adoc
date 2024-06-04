@@ -1,0 +1,21 @@
+= Physical Memory Protection (PMP) unit
+
+[quote,https://naizhengtan.github.io/23fall/docs/lab4/pmp.pdf]
+____
+PMP entries are described by an 8-bit configuration register and one
+MXLEN-bit address register.
+
+PMP entries are statically prioritized. The lowest-numbered PMP entry
+that matches any byte of an access determines whether that access
+succeeds or fails.
+
+The PMP values are checked in parallel with PMA checks.
+
+When paging is enabled, instructions that access virtual memory may
+result in multiple physical-memory accesses, including implicit
+references to the page tables. The PMP checks apply to all of these
+accesses. The e↵ective privilege mode for implicit page-table accesses
+is S.
+____
+
+

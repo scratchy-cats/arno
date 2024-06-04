@@ -1,12 +1,23 @@
 = Code model
 
-[quote]
+The code model is a way to address the range of memory from the code. For this
+book, the `medany` or medium any code model is used. This allows the code to
+address the range between -2 GiB and +2 GiB from its position. This is useful
+or may be required ot access other units on the memory bus suchs as serial
+ports, timers, or other peripherals.
+
+[quote,https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-elf.adoc#medium-any-code-model]
 The medium any code model, or medany, allows the code to address the range
 between -2 GiB and +2 GiB from its position. By using auipc and load / store
 instructions, when referring to an object, or addi, when calculating an address
 literal, for example, a signed 32-bit offset, relative to the value of the pc
 register, can be produced.
 
-****
-* https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-elf.adoc#medium-any-code-model
-****
+For example QEMU places its `VIRT_UART0` at `0x10000000`, and `VIRT_DRAM` at
+`0x80000000`. So the `medany` code mode allows to read and write to these from
+the `.text` section.
+
+.Linker Error due to incorrect code model
+[source,bash]
+error :(function println: .text+0x90): relocation R_RISCV_HI20 out of range:
+524288 is not in [-524288, 524287]; references 'UART'

@@ -1,11 +1,13 @@
 = Disabling the C extension
 
 [source,as]
+----
 .option arch, -c
+----
 
 ****
-* https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md#arch
-* https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md#rvcnorvc
+* https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md#arch[RISC-V archicture options]
+* https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md#rvcnorvc[The norvc directive]
 ****
 
 According to the https://github.com/riscvarchive/riscv-gcc/issues/135[web],

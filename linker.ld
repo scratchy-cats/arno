@@ -1,40 +1,55 @@
-OUTPUT_FORMAT(elf64-littleriscv);
-OUTPUT_ARCH(riscv:rv64);
-ENTRY(_start);
-
-__num_harts$ = 2;
-
-MEMORY
-{
-    /* see https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c#L70 */
-    CLINT (r)  : ORIGIN = 0x02000000, LENGTH = 0x00010000
-    UART (rw)  : ORIGIN = 0x10000000, LENGTH = 0x00001000
-    DRAM (rwx) : ORIGIN = 0x80000000, LENGTH = 0x06400000
-}
-
+/* [NOTE]
+ * the general layout of the section is based on
+ * the default script of the riscv64-unknown-elf-ld.
+ *
+ * .Get the defaul script
+ * [source,bash]
+ * riscv64-unknown-elf-ld --verbose
+*/
+OUTPUT_FORMAT(elf64-littleriscv)
+OUTPUT_ARCH(riscv:rv64g)
 SECTIONS {
-  . = ORIGIN(DRAM);
+    /* qemu virt machine dram base */
+    . = 0x80000000;
 
-  .text : ALIGN(4K) {
-    *(.init .init*);
-    *(.text .text*);
-  } > DRAM
+    .text ALIGN(16) : {
+        *(.init .init*);
+        *(.text .text*);
+    }
 
-  .rodata : ALIGN(4K) {
-    *(.srodata .srodata*);
-    *(.rodata .rodata*);
-  } > DRAM
+    .rodata ALIGN(16) :  {
+        *(.rodata .rodata*);
+    }
 
-  .data : ALIGN(4K) {
-    *(.sdata .sdata*);
-    *(.data .data*);
-  } > DRAM
+    .data ALIGN(16) : {
+        __DATA_BEGIN__ = .;
+        *(.data .data*);
+    }
 
-  .bss : ALIGN(4K) {
-    *(.bss);
-    . = ALIGN(4K);
-    PROVIDE(__stack_top$ = .);
-    . += __num_harts$ * 4K;
-    PROVIDE(__global_pointer$ = .);
-  } > DRAM
+    /* pack small data for more effient access */
+    .sdata ALIGN(16) : {
+        __SDATA_BEGIN__ = .;
+        *(.srodata .srodata*);
+        *(.sdata .sdata*);
+    }
+
+    .sbss ALIGN(16) : {
+        *(.sbss .sbss*);
+    }
+
+    .bss ALIGN(16) : {
+        *(.bss .bss.*)
+    }
+    __BSS_END__ = .;
+
+    /* global uninitialized variables are in bss.
+     * the global pointer can help to access them,
+     * more efficiently */
+    __global_pointer$ = MIN(__SDATA_BEGIN__ + 0x800,
+                        MAX(__DATA_BEGIN__ + 0x800,
+                            __BSS_END__ - 0x800));
+
+      /* both the global adn the stack pointer must be
+       * loaded into gp and sp respectively */
+    __stack_top$ = __global_pointer$ + 1K;
 }

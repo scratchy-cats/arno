@@ -1,0 +1,42 @@
+= RISC-V Kernel Developement
+:experimental:
+:reproducible:
+:cache-uri:
+:doctype: book
+:docinfo: shared
+:toc: left
+:toclevels: 4
+:sectnum:
+:sectanchors:
+:table-stripes: even
+:icons: font
+:source-highlighter: coderay
+:source-language: shell
+:source-linenums-option:
+
+[colophon]
+== Preface
+This book is a work in progress. It is for educational purposes only.
+
+:leveloffset: +1
+
+include::memory-layout.adoc[]
+
+include::code-model.adoc[]
+
+include::entrypoint.adoc[]
+
+include::attribute-arch.adoc[]
+
+include::disabling-the-c-extension.adoc[]
+
+// include::the-stack.adoc[]
+
+include::gp-relaxation.adoc[]
+
+include::physical-memory-protection.adoc[]
+
+include::interupt-delegation.adoc[]
+
+[appendix]
+include::resources.adoc[]
