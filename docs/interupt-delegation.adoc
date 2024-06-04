@@ -1,0 +1,6 @@
+= Machine Interupts and Exceptions Deleation (MIDELEG, MEDELEG)
+
+`mideleg` has the same layout as `MIP .
+Instead of trapping mip and checking the cause, we can just delegate all interrupts to supervisor.
+Any bit set in mideleg will be delegated to the next lower privilege level.
+See: https://riscv.org/wp-content/uploads/2016/07/Tue0900_RISCV-20160712-Interrupts.pdf

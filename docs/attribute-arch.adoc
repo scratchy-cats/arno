@@ -1,11 +1,13 @@
 = Architecture Attribute
 
 [source,as]
+----
 .attribute arch, "rv64gc"
+----
 
 ****
-* https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md#-attribute
-* https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-elf.adoc#tag_riscv_arch-5-ntbssubarch
+* https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md#-attribute[Attribute Directive in the RISC-V Assembly Programmer's Manual]
+* https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-elf.adoc#tag_riscv_arch-5-ntbssubarch[Architectures in the RISC-V ELF psABI]
 ****
 
 The arch attribute specifies the target architecture for the function. The
@@ -14,6 +16,7 @@ the extensions that are enabled by default as well as the ABI.
 
 When building rust code in release mode, and using global_asm to include
 assembly, the  https://github.com/rust-lang/rust/issues/80608[compiler does not
-honor rusts target], so setting this attribute seems required.
+honor rusts target], so setting this attribute seems required to ensure the
+correct architecture is used.
 
 

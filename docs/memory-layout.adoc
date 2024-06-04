@@ -1,0 +1,37 @@
+= Memory layout
+
+Each architecture has its own memory layout, and the kernel must be compiled to
+run at the correct address. Addtionally, firmware and bootloader influence
+where and how the kernel is loaded.
+
+The code in this book assumes a RISC-V 64-bit architecture. Specifcially,
+qemu's, generic, riscv64-virt machine is used. Which has the option to run code
+starting at the DRAM base address, `0x80000000`.
+
+.qemu's riscv virt machine, memory map
+[source,c]
+----
+include::https://raw.githubusercontent.com/qemu/qemu/master/hw/riscv/virt.c[lines=70..91]
+----
+
+Knowing the memory layout, a linker script for the kernel can be created. The
+linker will use this script during compilation, to arrange the bytes in the
+kernel binary. Since the output format is ELF, the linker will also add ELF
+headers to the binary. These headers contain information such as the memory
+layout, which is not bound to the binary alone. Other memory requirements, such
+as bss are also specified in the linker script.
+
+.Corresponding linker script sections
+[source,c]
+----
+include::../linker.ld[]
+----
+
+Notebly, this provides a few symbols via the `PROVIDE` directive. These
+symbols are used by the program, to set up vital CPU registers, such as the
+stack and global pointer. More on this later.
+
+[TIP]
+The elf binary produced must adhere to the
+https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-elf.adoc[RISC-V
+ELF PSABI].

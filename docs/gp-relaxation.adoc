@@ -6,13 +6,42 @@ disabled for this instruction. Disabling gp relaxation, means that the linker
 will not try to optimize the instruction,This is to avoid problems with
 relative adressing.
 
-[quote]
-In -no-pie mode, GNU ld performs global pointer relaxation.
-When producing an executable, linkers define __global_pointer$ at the start of
-.sdata plus 0x800. The runtime initializes gp (x3) to the value of
-__global_pointer$. When materializing an address +-2KiB of __global_pointer$,
-we can replace lui+addi with one addi.
+[quote,https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-cc.adoc]
+____
+If a platform requires use of a dedicated general-purpose register for a
+platform-specific purpose, it is recommended to use gp (x3). The platform ABI
+specification must document the use of this register. For such platforms, care
+must be taken to ensure all code (compiler generated or otherwise) avoids using
+gp in a way incompatible with the platform specific purpose, and that global
+pointer relaxation is disabled in the toolchain.
+____
 
+[quote,https://maskray.me/blog/2021-03-14-the-dark-side-of-riscv-linker-relaxation]
+____
+From binutils 2.41 onwards, GNU ld supports --no-relax-gp to disable global
+pointer relaxation.
+
+As of April 2023, the psABI has mentioned that gp (x3) can be used for a
+platform-specific purpose. Such uses are incompatible with global pointer
+relaxation.
+
+ld.lld got global pointer relaxation in April 2023. We made a deliberate choice
+to make --no-relax-gp the default.
+____
+
+[quote,https://maskray.me/blog/2021-03-14-the-dark-side-of-riscv-linker-relaxation]
+____
+In -no-pie mode, GNU ld performs global pointer relaxation.
+
+When producing an executable, linkers define `__global_pointer$` at the start
+of `.sdata` plus 0x800. The runtime initializes gp (x3) to the value of
+`__global_pointer$`. When materializing an address +-2KiB of
+`__global_pointer$`, we can replace `lui+addi` with one `addi`.
+____
+
+.Resources
+****
 * https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md#relaxnorelax
 * https://riscv.org/wp-content/uploads/2019/03/11.15-Shiva-Chen-Compiler-Support-For-Linker-Relaxation-in-RISC-V-2019-03-13.pdf
 * https://maskray.me/blog/2021-03-14-the-dark-side-of-riscv-linker-relaxation
+****
