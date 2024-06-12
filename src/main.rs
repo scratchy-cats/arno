@@ -1,67 +1,89 @@
 #![no_std]
 #![no_main]
 
-use core::arch::{asm, global_asm};
-
-global_asm!(include_str!("asm/entry.S"));
-
+core::arch::global_asm!(include_str!("asm/entry.S"));
 mod cpu;
 mod mmio;
 
+pub static mut PLIC: mmio::PLICDriver = mmio::PLICDriver {
+  base: 0x0C00_0000 as _,
+};
+
+pub static mut UART: mmio::UARTDriver = mmio::UARTDriver {
+  base: 0x1000_0000 as _,
+};
+
+pub const PLIC_SRC_UART: usize = 10;
+
 #[no_mangle]
-pub fn main() -> ! {
-  mmio::UART.fifo_enable();
+pub extern "C" fn main() {
+  println!("intializing...");
 
-  mmio::UART.write_str("init\n");
+  csrw!("mtvec", trap_handler as usize);
+  println!("mtvec set");
 
-  // // set the trap vector, and enable mie.MEIE
   unsafe {
-    asm!("csrw mtvec, {0}", in(reg) irq_handler as usize);
-    asm!("csrs mstatus, {0}", in(reg) 1 << 3);
-    asm!("csrs mie, {0}", in(reg) 1 << 11);
+    UART.fifo_init();
   }
-  mmio::UART.write_str("interrupts enabled\n");
+  println!("UART initialized");
 
-  /* example of configuring external interupts via PLIC */
+  csrs!("mie", cpu::MIE_MEIE);
+  csrs!(
+    "mstatus",
+    cpu::MSTATUS_MPP_M | cpu::MSTATUS_MPIE | cpu::MSTATUS_MIE
+  );
+  println!("interrupts enabled");
 
-  // current hart in machine mode
-  let context = mmio::PLICDriver::get_context(cpu::mhartid(), 0);
-  // Set the priority of the UART interrupt to 1
-  mmio::PLIC.set_priority(mmio::UARTDriver::interrupt_source(), 1);
-  // Enable the UART interrupt for the current hart
-  mmio::PLIC.set_enable(context, mmio::UARTDriver::interrupt_source());
-  // Set the threshold to 0, so that all interrupts
-  // with priority > 0 will trigger
-  mmio::PLIC.set_threshold(context, 0);
-  mmio::UART.write_str("uart interupts enabled in plic\n");
+  let word = mmio::PLICDriver::word_index(0);
+  unsafe {
+    PLIC.set_priority(PLIC_SRC_UART, 1);
+    PLIC.set_enable(word, PLIC_SRC_UART);
+    PLIC.set_threshold(word, 0);
+  }
+  println!("PLIC initialized");
 
-  // enable uart interupts
-  mmio::UART.interrupt_enable(0x1);
-  mmio::UART.write_str("uart interrupts enabled\n");
+  unsafe {
+    UART.interrupt_enable(1);
+  }
+  println!("UART interrupt enabled");
 
-  // now, whenever a character is received, the uart
-  // will trigger an interrupt, which will be handled
-  // by the irq_handler function
-
-  mmio::UART.write_str("done\n");
-
-  loop {}
+  println!("done, waiting for interrupt...");
+  loop {
+    wfi!();
+  }
 }
 
 #[no_mangle]
-pub extern "C" fn irq_handler() {
-  mmio::UART.write_str("interrupt\n");
+pub extern "C" fn trap_handler() {
+  println!("trap_handler");
   loop {}
+}
+
+#[macro_export]
+macro_rules! print {
+  ($($arg:tt)*) => {
+    {
+      use core::fmt::Write;
+      unsafe { let _ = write!(crate::UART, $($arg)*); }
+    }
+  };
+}
+
+#[macro_export]
+macro_rules! println {
+  () => {
+    print!("\n");
+  };
+  ($($arg:tt)*) => {
+    {
+      print!("{}\n", format_args!($($arg)*));
+    }
+  };
 }
 
 use core::panic::PanicInfo;
-
 #[panic_handler]
 fn panic(_info: &PanicInfo<'_>) -> ! {
-  unsafe {
-    loop {
-      asm!("ebreak");
-      asm!("wfi");
-    }
-  }
+  println!("panic!");
+  loop {}
 }

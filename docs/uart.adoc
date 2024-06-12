@@ -4,20 +4,46 @@ UART is a contegious memory region, where each byte represents one of up to 4
 registers, depending if its a load or store operation, and if dlatch is
 enabled.
 
+[TIP]
+====
+You can inspect the UART registers by reading the memory at the base address,
+with GDB, while the program is running.
+
+.Hex format
+----
+(gdb) x/7xb 0x10000001
+0x10000001:     0x00    0xc1    0x00    0x08    0x60    0xb0    0x00
+----
+
+.Binary format
+----
+(gdb) x/7tb 0x10000001
+0x10000001:     00000000        11000001        00000000
+00001000        01100000        10110000        00000000
+----
+
+This is reading all 8 bytes except for the first one. When dlatch is disabled,
+this will read in the order as shown in the table above: `SCR`, `MSR`, `LSR`,
+`MCR`, `LCR`, `IIE`, `IER`
+====
+
 It could be represented as array where multiple registers occupy the same index.
 
 [source,c]
 ----
-base[8];
-receive_buffer = base[0];
-transmit_holding = base[0];
-dlatch = base[1];
-interrupt_enable = base[1];
-interrupt_identification = base[2];
-fifo_control = base[2];
-line_control = base[3];
-modem_control = base[3];
-line_status = base[4];
-modem_status = base[4];
-scratch = base[5];
+u8 base[8];
+u8 receive_buffer = base[0];
+u8 transmit_holding = base[0];
+u8 dlatch = base[1];
+u8 interrupt_enable = base[1];
+u8 interrupt_identification = base[2];
+u8 fifo_control = base[2];
+u8 line_control = base[3];
+u8 modem_control = base[3];
+u8 line_status = base[4];
+u8 modem_status = base[4];
+u8 scratch = base[5];
 ----
+
+https://en.wikibooks.org/wiki/Serial_Programming/8250_UART_Programming#UART_Registers[See more]
+
