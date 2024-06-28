@@ -1,0 +1,10 @@
+[build]
+target = "riscv64gc-unknown-none-elf"
+
+[target.riscv64gc-unknown-none-elf]
+rustflags = ["-C", "link-arg=-Tlinker.ld"]
+runner = """
+  qemu-system-riscv64 -machine virt
+    -display none -serial stdio -smp 1
+    -bios none -kernel
+"""

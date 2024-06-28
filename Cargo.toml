@@ -1,0 +1,19 @@
+[package]
+name = "arno"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "arno"
+test = false
+bench = false
+
+[profile.dev]
+# Disabling stack unwinding. This disables the generation of unwinding symbol information and thus
+# considerably reduces binary size.
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+
+[dependencies]
