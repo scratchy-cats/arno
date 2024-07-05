@@ -11,3 +11,4 @@
 
 - [Understanding UART](https://www.rohde-schwarz.com/us/products/test-and-measurement/essentials-test-equipment/digital-oscilloscopes/understanding-uart_254524.html)
 - [UART Registers](https://en.wikibooks.org/wiki/Serial_Programming/8250_UART_Programming#UART_Registers)
+- [RISCV assembly manual](https://github.com/riscv-non-isa/riscv-asm-manual/blob/main/riscv-asm.md)

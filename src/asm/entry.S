@@ -16,13 +16,13 @@
     _entry:
       // stack-pointer = address(stack0) + ((current hart-id + 1) * STACK_MEMORY_PER_HART)
       //
-      la sp, stack0     						// (l)oad (a)ddress of stack0 to stack-pointer.
+      la sp, stack0                 // (l)oad (a)ddress of stack0 to stack-pointer.
       li a0, STACK_MEMORY_PER_HART  // (l)oad (i)mmediate: a0 = STACK_MEMORY_PER_HART.
-      csrr a1, mhartid  						// (r)ead: a1 = current (har)dware(t)hread id.
-      addi a1, a1, 1    						// (a)dd (i)mmediate: a1 = hartid + 1
-      mul a0, a0, a1    						// (m)ultiply: a0 = a0 * STACK_MEMORY_PER_HART
-      add sp, sp, a0    						// (a)dd: sp = sp + a0
+      csrr a1, mhartid              // (r)ead: a1 = current (har)dware(t)hread id.
+      addi a1, a1, 1                // (a)dd (i)mmediate: a1 = hartid + 1
+      mul a0, a0, a1                // (m)ultiply: a0 = a0 * STACK_MEMORY_PER_HART
+      add sp, sp, a0                // (a)dd: sp = sp + a0
 
-      call main                     // main( ) is defined in ../main.rs.
+      call start                    // start( ) is defined in ../start.rs.
 
   // NOTE : csr = (c)ontrol and (s)tatus (r)egister.

@@ -7,6 +7,7 @@ edition = "2021"
 name = "arno"
 test = false
 bench = false
+path = "src/start.rs"
 
 [profile.dev]
 # Disabling stack unwinding. This disables the generation of unwinding symbol information and thus
