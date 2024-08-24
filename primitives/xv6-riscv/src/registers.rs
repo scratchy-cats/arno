@@ -1,12 +1,15 @@
 use core::arch::asm;
 
+// NOTE : WARL = Write Any Read Legal
+
+#[allow(non_camel_case_types)]
 enum BitMasks {
-  MSTATUS_MPP_CLEARER_MASK = 3 << 11,
+  MSTATUS_MPP_CLEARER = 3 << 11,
   MSTATUS_MPP_SUPERVISOR = 1 << 11,
 
-  SUPERVISOR_SOFTWARE_INTERRUPS_ENABLE_MASK = 1 << 1,
-  SUPERVISOR_TIMER_INTERRUPTS_ENABLE_MASK = 1 << 5,
-  SUPERVISOR_EXTERNAL_INTERRUPTS_ENABLE_MASK = 1 << 9,
+  SUPERVISOR_SOFTWARE_INTERRUPTS_ENABLE = 1 << 1,
+  SUPERVISOR_TIMER_INTERRUPTS_ENABLE = 1 << 5,
+  SUPERVISOR_EXTERNAL_INTERRUPTS_ENABLE = 1 << 9,
 }
 
 // The mstatus (Machine Status) register keeps track of and controls the hart's current operating
@@ -20,7 +23,7 @@ impl Mstatus {
   // Clears the MPP bits.
   #[inline]
   unsafe fn clearMppBits(&self) {
-    asm!("csrc mstatus, {}", in(reg)BitMasks::MSTATUS_MPP_CLEARER_MASK as usize);
+    asm!("csrc mstatus, {}", in(reg)BitMasks::MSTATUS_MPP_CLEARER as usize);
   }
 
   // Before switching to S-mode, we'll set the MPP bits to 01. If any trap occurs in S-mode, and we
@@ -87,7 +90,7 @@ impl Mideleg {
 }
 
 /*
-  The SIE (Supervisor Interrupt Enable) register contains bits using which we can enable / disable
+  The sie (Supervisor Interrupt Enable) register contains bits using which we can enable / disable
   interrupts.
 
   An interrupt (i) will trap to S-mode if both of the following are true :
@@ -108,31 +111,97 @@ impl Sie {
   pub unsafe fn enableInterrupts(&self) {
     asm!(
       "csrs sie, {}",
-      in(reg)BitMasks::SUPERVISOR_EXTERNAL_INTERRUPTS_ENABLE_MASK as usize | BitMasks::SUPERVISOR_TIMER_INTERRUPTS_ENABLE_MASK as usize | BitMasks::SUPERVISOR_SOFTWARE_INTERRUPTS_ENABLE_MASK as usize
+      in(reg)BitMasks::SUPERVISOR_EXTERNAL_INTERRUPTS_ENABLE as usize | BitMasks::SUPERVISOR_TIMER_INTERRUPTS_ENABLE as usize | BitMasks::SUPERVISOR_SOFTWARE_INTERRUPTS_ENABLE as usize
     );
   }
 }
 
-/*
-  To support secure processing and contain faults, it is desirable to limit the physical addresses
-  accessible by software running on a hart. An optional Physical Memory Protection (PMP) unit
-  provides per-hart machine-mode control registers to allow physical memory access privileges
-  (read, write, execute) to be specified for each physical memory region.
+// REFER : section 3.7 in privileged ISA manual and https://youtu.be/cWlEKpCtjes.
+pub mod pmp {
+  use core::arch::asm;
 
-  The granularity of PMP access control settings are platform-specific, but the standard PMP
-  encoding supports regions as small as four bytes.
+  // The A field in a PMP entry’s configuration register encodes the address-matching mode of the
+  // associated PMP address register.
+  pub enum AddressMatchingMode {
+    OFF = 0b00,
 
-  PMP checks are applied to all accesses whose effective privilege mode is S or U, including
-  instruction fetches and data accesses in S and U mode, and data accesses in M-mode when the MPRV
-  bit in mstatus is set and the MPP field in mstatus contains S or U. PMP checks are also applied
-  to page-table accesses for virtual-address translation, for which the effective privilege mode is
-  S. Optionally, PMP checks may additionally apply to M-mode accesses, in which case the PMP
-  registers themselves are locked, so that even M-mode software cannot change them until the hart
-  is reset.
+    // TOR (Top Of Range) : The associated address register forms the top of the address
+    // range, and the preceding PMP address register forms the bottom of the address range.
+    TOR = 0b01,
 
-  In effect, PMP can grant permissions to S and U modes, which by default have none, and can revoke
-  permissions from M-mode, which by default has full permissions.
-*/
-pub struct Pmpaddr0;
+    NA4 = 0b10, // Naturally Aligned 4-byte Region.
 
-impl Pmpaddr0 {}
+    // NAPOT (Naturally Aligned Power-Of-Two Region) makes use of the low-order bits of the
+    // associated pmpaddr register to encode the size of the range.
+    NAPOT = 0b11,
+  }
+
+  pub enum PermissionLevel {
+    NONE = 0b000,
+    R = 0b001,
+    W = 0b010,
+    RW = 0b011,
+    X = 0b100,
+    RX = 0b101,
+    WX = 0b110,
+    RWX = 0b111,
+  }
+
+  pub struct PmpCfg0;
+
+  impl PmpCfg0 {
+    pub unsafe fn setPmpaddrConfig(
+      &self,
+      index: usize,
+      addressMatchingMode: AddressMatchingMode,
+      permissionLevel: PermissionLevel,
+      isLocked: bool,
+    ) {
+      assert!(index < 8);
+
+      let PmpaddrConfigBitMask =
+        (isLocked as usize) << 7 | (addressMatchingMode as usize) << 3 | (permissionLevel as usize);
+
+      unimplemented!();
+    }
+  }
+
+  pub struct Pmpaddr0;
+
+  impl Pmpaddr0 {
+    #[inline]
+    pub unsafe fn defineMemoryRegion(&self, memoryAddress: usize) {
+      asm!("csrw pmpaddr0, {}", in(reg)memoryAddress);
+    }
+
+    pub unsafe fn defineFullPhysicalMemoryRegion(&self) {
+      Self.defineMemoryRegion(0x3fffffffffffff);
+    }
+  }
+}
+
+// The mhartid register is a read-only register containing the integer ID of the hardware thread
+// running the code.
+pub struct Mhartid;
+
+impl Mhartid {
+  #[inline]
+  pub unsafe fn read(&self) -> usize {
+    let hartId: usize;
+    asm!("csrr {}, mhartid", out(reg)hartId);
+    hartId
+  }
+}
+
+// The tp (Thread Pointer) register stores the id of the hardware thread on which we're currently
+// running.
+// Before switching to U-mode, the Kernel saves the value of this register in the stack. On return
+// from the U-mode, that value is restored back.
+pub struct Tp;
+
+impl Tp {
+  #[inline]
+  pub unsafe fn write(&self, hartId: usize) {
+    asm!("mv tp, {}", in(reg)hartId);
+  }
+}

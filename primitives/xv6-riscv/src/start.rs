@@ -19,6 +19,8 @@
 */
 #![no_main]
 
+use registers::pmp;
+
 core::arch::global_asm!(include_str!("asm/entry.S"));
 
 #[no_mangle] // Disabling name mangling to ensure that the Rust compiler really outputs a function
@@ -27,7 +29,7 @@ core::arch::global_asm!(include_str!("asm/entry.S"));
 unsafe fn start() -> ! {
   use core::arch::asm;
   use main::main;
-  use registers::{Medeleg, Mepc, Mideleg, Mstatus, Satp, Sie};
+  use registers::{Medeleg, Mepc, Mhartid, Mideleg, Mstatus, Satp, Sie, Tp};
 
   println!("Kernel is starting....");
 
@@ -39,9 +41,19 @@ unsafe fn start() -> ! {
 
   Satp.disablePaging();
 
+  // Delegate traps (exceptions and interrupts) to the S-mode.
   Medeleg.delegateExceptionsToSMode();
   Mideleg.delegateInterruptsToSMode();
+
+  // Enable interrupts for S-mode.
   Sie.enableInterrupts();
+
+  // Give access of the complete Physical Memory to the S-mode.
+  pmp::Pmpaddr0.defineFullPhysicalMemoryRegion();
+
+  // Store the hardware-thread id in the tp (thread pointer) register.
+  let hartId = Mhartid.read();
+  Tp.write(hartId);
 
   // Switch to S-mode and jump to main( ).
   asm!("mret");

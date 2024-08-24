@@ -1,13 +1,13 @@
 .attribute arch, "rv64gc"
 .option    arch, -c       // Disable c-extension.
 
-.equ MAX_HARTS, 1 // HART (hardware thread) is equivalent to CPU core.
+.equ MAX_HARTS, 2 // HART (hardware thread) is equivalent to CPU core.
 .equ STACK_MEMORY_PER_HART, 4096
 
 .section .bss
   .align 4
   // Since we don't have the crt0 runtime, we need to create a stack explicitly. Each CPU core
-  // (hardware thread) will get 16 KB from this stack.
+  // (hardware thread) will get 4 KB from this stack.
   stack0:
     .space STACK_MEMORY_PER_HART*MAX_HARTS
 
