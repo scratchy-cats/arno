@@ -28,7 +28,7 @@ struct UARTDriver;
 */
 const UART_BASE_REGISTER: usize = 0x1000_0000;
 
-const TRANSMIT_HOLDING_REGISTER: usize = UART_BASE_REGISTER + 0x00;
+const TRANSMIT_HOLDING_REGISTER: usize = UART_BASE_REGISTER;
 
 impl Write for UARTDriver {
   fn write_str(&mut self, s: &str) -> core::fmt::Result {
@@ -55,6 +55,6 @@ macro_rules! print {
 #[macro_export]
 macro_rules! println {
   ($($arg: tt)*) => {
-    print!("{}\n", format_args!($($arg)*));
+    $crate::print!("{}\n", format_args!($($arg)*));
   };
 }

@@ -1,4 +1,6 @@
 #![allow(non_snake_case)]
+#![allow(special_module_name)]
+#![allow(clippy::upper_case_acronyms)]
 //
 // Rust's standard library depends on libc, which in-turn depends on the underlying Operating
 // System. Since we're building the Operating System itself, we cannot use the standard library.
@@ -49,7 +51,13 @@ unsafe fn start() -> ! {
   Sie.enableInterrupts();
 
   // Give access of the complete Physical Memory to the S-mode.
-  pmp::Pmpaddr0.defineFullPhysicalMemoryRegion();
+  pmp::Pmpaddr0.defineFullPhysicalMemoryAsRegion();
+  pmp::PmpCfg0.setPmpaddrConfig(
+    0,
+    pmp::AddressMatchingMode::TOR,
+    pmp::PermissionLevel::RWX,
+    false,
+  );
 
   // Store the hardware-thread id in the tp (thread pointer) register.
   let hartId = Mhartid.read();
@@ -58,6 +66,7 @@ unsafe fn start() -> ! {
   // Switch to S-mode and jump to main( ).
   asm!("mret");
 
+  #[allow(clippy::empty_loop)]
   loop {}
 }
 
