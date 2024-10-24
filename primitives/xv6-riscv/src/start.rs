@@ -31,7 +31,10 @@ core::arch::global_asm!(include_str!("asm/entry.S"));
 unsafe fn start() -> ! {
   use core::arch::asm;
   use main::main;
-  use registers::{Medeleg, Mepc, Mhartid, Mideleg, Mstatus, Satp, Sie, Tp};
+  use registers::{
+    medeleg::Medeleg, mepc::Mepc, mhartid::Mhartid, mideleg::Mideleg, mstatus::Mstatus, satp::Satp,
+    sie::Sie, tp::Tp,
+  };
 
   println!("Kernel is starting....");
 
