@@ -6,6 +6,9 @@ set disassemble-next-line auto
 set riscv use-compressed-breakpoints yes
 set breakpoint pending on
 break _start
+break arno::main
+break arno::panic
+break arno::trap_handler
 tui enable
 layout reg
 c

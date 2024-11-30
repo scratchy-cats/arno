@@ -1,0 +1,61 @@
+= Platform level interrupt controller (PLIC)
+
+The PLIC is a multiplexer for external interupts. It is a memory mapped device
+that is used to prioritize interupts and route them to the appropriate hart.
+
+.Plic Base
+[source,c]
+uint32_t *volatile PLIC = (uint32_t *)0xc000000;
+
+The priority is set on a source basis, without taking the context into account.
+It can be set to a by writing to the `0x4 * src` address.
+
+.Set priotiry
+[source,c]
+PLIC[(0x4 * src) >> 2] = 1;
+
+The interupts are enabled on a context basis. The context is the combinaion of
+hart and privilege level. Each context can enable or disable interupts by
+writing to the `0x002000 + 0x80 * ctx + (src >> 5)` register. The value is a
+bitfield where each bit represents a source. The bit for a source can be set by
+writing `0b1 << (src & 31)` to the register. This is finding the register
+containing the bitfield, and then finding the bit in that bitfield.
+
+.Enable interupt
+[source,c]
+PLIC[(0x002000 + 0x80 * ctx + (src >> 5)) >> 2] |= 0b1 << (src & 31);
+
+Each context can set a priority threshold. This is the minimum priority that
+will be forwarded to the hart. The priority is set by writing to the `0x200000
++ 0x1000 * ctx` register.
+
+.Lower priority threshold
+[source,c]
+PLIC[(0x200000 + 0x1000 * ctx) >> 2] = 0;
+
+When an interupt is pending, it can be claimed by reading the `0x200004 +
+0x1000 * ctx` register. This will return the source of the highest priority
+pending interupt.
+
+.Claim interupt
+[source,c]
+uint32_t src = PLIC[(0x200004 + 0x1000 * ctx) >> 2];
+
+To complete an interupt, the source must be written to the `0x200004 + 0x1000 *
+ctx` register.
+
+.Complete interupt
+[source,c]
+PLIC[(0x200004 + 0x1000 * ctx) >> 2] = src;
+
+[TIP]
+====
+When using QEMU, the source ID can be found in the device tree.
+
+.Obtaining device tree
+[source,bash]
+----
+qemu-system-riscv64 -nographic -machine virt,dumpdtb=virt.out
+dtdump virt.out > qemu.fdt.txt
+----
+====

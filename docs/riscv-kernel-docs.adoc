@@ -18,7 +18,11 @@
 == Preface
 This book is a work in progress. It is for educational purposes only.
 
-:leveloffset: +1
+:leveloffset: -1
+
+== Introduction
+
+:leveloffset: +2
 
 include::memory-layout.adoc[]
 
@@ -34,9 +38,21 @@ include::disabling-the-c-extension.adoc[]
 
 include::gp-relaxation.adoc[]
 
+:leveloffset: -2
+
+= Architecture
+
+:leveloffset: +2
+
+include::uart.adoc[]
+
+include::platform-level-interrupt-controller.adoc[]
+
 include::physical-memory-protection.adoc[]
 
 include::interupt-delegation.adoc[]
+
+:leveloffset: -2
 
 [appendix]
 include::resources.adoc[]

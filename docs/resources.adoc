@@ -51,3 +51,13 @@
 
 .Videos
 * https://www.youtube.com/watch?v=QFPQ_kTsbtw[Fast Interupts]
+
+.PLIC
+* https://github.com/riscv/riscv-plic-spec/blob/master/riscv-plic.adoc[RISC-V PLIC]
+* https://github.com/riscv/riscv-isa-manual/blob/main/src/machine.adoc#mcauses[MCAUSE]
+* https://wiki.osdev.org/PLIC[OSDev PLIC]
+* https://github.com/qemu/qemu/blob/master/hw/riscv/virt.c#L79[QEMU PLIC]
+* https://github.com/Mi-V-Soft-RISC-V/miv-rv32-bare-metal-examples/blob/main/applications/freertos/miv-rv32-freertos-demo/src/platform/miv_rv32_hal/miv_rv32_plic.h#L108[FreeRTOS PLIC]
+
+.UART
+* https://en.wikibooks.org/wiki/Serial_Programming/8250_UART_Programming#UART_Registers[UART Registers]
