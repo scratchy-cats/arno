@@ -8,6 +8,15 @@ pub struct _CPU([Core; MAX_CORES]);
 
 impl _CPU {
   pub const fn new() -> Self {
+    /*
+      (1) We cannot use std::array::from_fn( ), since we cannot depend on the standard library.
+
+      (2) And doing [Core::new( ); MAX_CORES] would require us to derive Copy trait for Core, since
+          Rust will try to duplicate / copy Core::new( ) (MAX_CORES - 1) times.
+
+      That's why, using array_macro::array! is appropriate here. It instantiates Core separately,
+      MAX_CORES times.
+    */
     Self(array![_ => Core::new( ); MAX_CORES])
   }
 

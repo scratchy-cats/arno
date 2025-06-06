@@ -1,24 +1,24 @@
 /*
-  1. The Clang compiler takes your source (.c / .cpp) file and generates a CPU architecture specific
-     human readable assembly `.s` file.
-     Optionally, from the source file, you can first generate a LLVM IR (.ll) file which shows you -
-     how your sourcecode is getting optimized by LLVM. Then using llc, you can generate the assembly
-     file from that LLVM IR file.
+  (1) The Clang compiler takes your source (.c / .cpp) file and generates a CPU architecture
+			specific human readable assembly `.s` file.
+     	Optionally, from the source file, you can first generate a LLVM IR (.ll) file which shows you -
+			how your sourcecode is getting optimized by LLVM. Then using llc, you can generate the
+			assembly file from that LLVM IR file.
 
-  2. The Assembler then generates an object (.o) file from that assembly file. The object file contains
-     binary code split across different sections (like .text, .bss, .rodata etc). It also has
-     information about - which symbols are declared in it and which symbols are defined in it.
+  (2) The Assembler then generates an object (.o) file from that assembly file. The object file
+			contains binary code split across different sections (like .text, .bss, .rodata etc). It also
+			has information about - which symbols are declared in it and which symbols are defined in it.
 
-  3. The Linker then takes multiple object files and generates the executable (.out) (which is also
-     an object file - but with resolved symbol definitions). It resolves each symbol declaration by
-     finding the corresponding definition in all those input object files.
+  (3) The Linker then takes multiple object files and generates the executable (.out) (which is also
+     	an object file - but with resolved symbol definitions). It resolves each symbol declaration by
+     	finding the corresponding definition in all those input object files.
 
-    The main purpose of the Linker Script is to describe how the sections in the input object files
-    should be mapped into the output executable file, and to control the memory layout of the
-    executable file. Most Linker Scripts do nothing more than this.
+    	The main purpose of the Linker Script is to describe how the sections in the input object
+			files should be mapped into the output executable file, and to control the memory layout of
+			the executable file. Most Linker Scripts do nothing more than this.
 
-    The Linker always uses a Linker Script. If you do not supply one yourself, the Linker will use a
-    default script that is compiled into the Linker executable.
+    	The Linker always uses a Linker Script. If you do not supply one yourself, the Linker will use
+			a default script that is compiled into the Linker executable.
 */
 
 /* The output object file (in ELF64 binary format) is meant for 64 bit RISCV CPU architecture and

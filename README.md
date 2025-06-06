@@ -16,7 +16,9 @@
 
 - [x] Read about `atomics` and `memory ordering` in detail.
 
-- [ ] Read : https://amjad.alsharafi.dev/en/posts/operating-system/spinlocks/ and https://www.reddit.com/r/rust/comments/18be8fg/blog_operating_systems_spinlocks/.
+- [ ] Read : <https://amjad.alsharafi.dev/en/posts/operating-system/spinlocks/> and <https://www.reddit.com/r/rust/comments/18be8fg/blog_operating_systems_spinlocks/>.
+
+- [ ] Learn in-depth about `NonNull`.
 
 ## Scope of improvements
 

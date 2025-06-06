@@ -1,7 +1,7 @@
 .attribute arch, "rv64gc"
 .option    arch, -c       // Disable c-extension.
 
-.equ MAX_HARTS, 2 // HART (hardware thread) is equivalent to CPU core.
+.equ MAX_HARTS, 2 // A HART (Hardware Thread) is generally equivalent to a physical CPU core.
 .equ STACK_MEMORY_PER_HART, 4096
 
 .section .bss
@@ -23,6 +23,6 @@
       mul a0, a0, a1                // (m)ultiply: a0 = a0 * STACK_MEMORY_PER_HART
       add sp, sp, a0                // (a)dd: sp = sp + a0
 
-      call start                    // start( ) is defined in ../start.rs.
+      call start // start( ) is defined in ../start.rs.
 
-  // NOTE : csr = (c)ontrol and (s)tatus (r)egister.
+// NOTE : csr = (c)ontrol and (s)tatus (r)egister.

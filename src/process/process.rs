@@ -30,11 +30,11 @@ pub enum ProcessState {
 
   RUNNABLE,
 
+  RUNNING,
+
   // The process is currently blocked, waiting to acquire a SleepLock / some I/O operation to
   // finish.
   SLEEPING,
-
-  RUNNING,
 
   ZOMBIE,
 

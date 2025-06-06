@@ -2,6 +2,7 @@
   non_snake_case,
   non_camel_case_types,
   special_module_name,
+  const_item_mutation,
   clippy::module_inception,
   clippy::upper_case_acronyms
 )]

@@ -8,11 +8,11 @@ use {
   entry::{PTEBitFlags, PageTableEntry},
 };
 
-const TOTAL_PAGE_COUNT: usize = 512;
+const PAGE_TABLE_ENTRY_COUNT: usize = 512;
 const MAX_VA: usize = 1 << (9 + 9 + 9 + 12 - 1); // TODO : Understand.
 
 /*
-  When RV64, three paged virtual-memory schemes are defined: Sv39, Sv48, and Sv57.
+  In RV64, three paged virtual-memory schemes are defined: Sv39, Sv48, and Sv57.
   We'll be implementing the Sv39 scheme.
 
   In order to enable the Sv39 scheme, you need to write 8 into the MODE bits of the satp CSR.
@@ -33,16 +33,21 @@ const MAX_VA: usize = 1 << (9 + 9 + 9 + 12 - 1); // TODO : Understand.
   the size of a page and must always be aligned to a page boundary.
 
   Each Page is identified using a Page Number (PN).
+
+                            PN x 4096 (page size) = Address of the page
+
+  REFERENCE : https://www.youtube.com/watch?v=g7B0WS5Xu-A.
+              An amazing blog explaining the paging system in RiscV : https://clownote.github.io/2021/03/06/xv6/Xv6-page-table/.
 */
 #[repr(C, align(4096))]
 pub struct PageTable {
-  pub entries: [PageTableEntry; TOTAL_PAGE_COUNT],
+  pub entries: [PageTableEntry; PAGE_TABLE_ENTRY_COUNT],
 }
 
 impl PageTable {
   pub const fn empty() -> Self {
     Self {
-      entries: [PageTableEntry(0); TOTAL_PAGE_COUNT],
+      entries: [PageTableEntry(0); PAGE_TABLE_ENTRY_COUNT],
     }
   }
 }

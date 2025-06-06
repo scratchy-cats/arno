@@ -1,8 +1,19 @@
-use {super::cpu::CPU, crate::arch::riscv::registers::sstatus::Sstatus};
+use {
+  super::{
+    cpu::CPU,
+    manager::PROCESS_MANAGER,
+    process::{Process, ProcessState},
+  },
+  crate::arch::riscv::registers::sstatus::Sstatus,
+  core::ptr::NonNull,
+};
 
 pub struct Core {
+  // Pointer to the current process (if any) running on this core.
+  pub process: Option<NonNull<Process>>,
+
   /*
-    Each time while entering an interrupts-disabled section, we :
+    Each time while entering an interrupts-disabled section :
 
       (1) if entering the outermost interrupts-disabled section, then store whether interrupts were
           enabled or not (before entering the interrupts-disabled section) in the intena variable.
@@ -14,16 +25,19 @@ pub struct Core {
       (1) decrease the noff counter
 
       (2) if leaving the outermost interrupts-disabled section, then enable interrupts based on
-          whether they were enabled or not before entering the outermost interrupts-disabled section
-          (stored in the intena variable).
+          whether they were enabled or not before entering the outermost interrupts-disabled
+          section (stored in the intena variable).
 
     This prevents premature enabling of interrupts when dealing with nested interrupts-disabled
-    sections (like acquiring a SpinLock A and then acquiring another SpinLock A without releasing
-    B).
+    sections (like acquiring a SpinLock A and then acquiring another SpinLock B without releasing
+    A).
 
     REFER : https://www.youtube.com/watch?v=gQdflOUZQvA.
   */
+  // Represents the nesting level of interrupt-disabled sections.
   noff: usize,
+  // Represents whether interrupts were enabled or not, before entering the outermost interrupts-
+  // disabled section.
   intena: bool,
 }
 
@@ -84,6 +98,25 @@ impl Core {
       // section.
       if core.intena {
         unsafe { Sstatus.disableInterrupts() };
+      }
+    }
+  }
+
+  pub unsafe fn scheduler(&mut self) {
+    let core = CPU.getCurrentCore();
+
+    loop {
+      // TODO : Understand why do we need this?
+      Sstatus.enableInterrupts();
+
+      if let Some(process) = PROCESS_MANAGER.findRunnableProcess() {
+        self.process = NonNull::new(process as *mut Process);
+
+        // Mark the process as RUNNING.
+        let mut processMetadata = process.metadata.acquire();
+        processMetadata.state = ProcessState::RUNNING;
+
+        drop(processMetadata);
       }
     }
   }

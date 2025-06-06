@@ -2,7 +2,8 @@ use core::arch::asm;
 
 #[allow(non_camel_case_types)]
 enum BitMasks {
-  SSTATUS_SIE_CLEARER = 0 << 1,
+  SUPERVISOR_INTERRUPTS_DISABLER = 0 << 1,
+  SUPERVISOR_INTERRUPTS_ENABLER = 1 << 1,
 }
 
 // The sstatus (Supervisor Status) register, keeps track of the processor’s current operating state.
@@ -15,18 +16,24 @@ pub struct Sstatus;
 // interrupts are enabled. The supervisor can disable individual interrupt sources using the sie
 // CSR.
 impl Sstatus {
-  // Returns whether all interrupts are disable or not.
+  // Returns whether all interrupts are disabled or not.
   #[inline]
   pub unsafe fn areInterruptsEnabled(&self) -> bool {
     let mut bits: usize;
     asm!("csrr {}, sstatus", out(reg)bits);
 
-    (bits & BitMasks::SSTATUS_SIE_CLEARER as usize) != 1
+    (bits & BitMasks::SUPERVISOR_INTERRUPTS_DISABLER as usize) != 1
   }
 
   // Disable all interrupts by clearing the SIE bits.
   #[inline]
   pub unsafe fn disableInterrupts(&self) {
-    asm!("csrc sstatus, {}", in(reg)BitMasks::SSTATUS_SIE_CLEARER as usize);
+    asm!("csrc sstatus, {}", in(reg)BitMasks::SUPERVISOR_INTERRUPTS_DISABLER as usize);
+  }
+
+  // Enable all interrupts by setting the SIE bits.
+  #[inline]
+  pub unsafe fn enableInterrupts(&self) {
+    asm!("csrc sstatus, {}", in(reg)BitMasks::SUPERVISOR_INTERRUPTS_ENABLER as usize);
   }
 }
